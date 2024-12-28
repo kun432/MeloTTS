@@ -485,7 +485,7 @@ def japanese_text_to_phonemes(text: str) -> str:
     return res
 
 
-def is_japanese_character(char):
+def is_allowed_character(char):
     # 定义日语文字系统的 Unicode 范围
     japanese_ranges = [
         (0x3040, 0x309F),  # 平假名
@@ -503,6 +503,10 @@ def is_japanese_character(char):
     for start, end in japanese_ranges:
         if start <= char_code <= end:
             return True
+
+    # char in repmap and in pancutuation are allowd
++    if char in rep_map or char in punctuation:
++        return True
 
     return False
 
@@ -548,7 +552,7 @@ conv = kakasi.getConverter()
 def text_normalize(text):
     res = unicodedata.normalize("NFKC", text)
     res = japanese_convert_numbers_to_words(res)
-    res = "".join([i for i in res if is_japanese_character(i)])
+    res = "".join([i for i in res if is_allowed_character(i)])
     res = replace_punctuation(res)
     res = conv.do(res)
     return res
